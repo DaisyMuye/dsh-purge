@@ -25,6 +25,10 @@ function printStatus(state) {
   out.push(`  注入状态       ${state.override_status}`);
   out.push("");
   out.push(`  补丁 ${state.patches_applied}/${core.ALL_PATCHES.length} 已清洗, ${state.patches_pending} 待清洗`);
+  if (state.patches_drift > 0) {
+    out.push(`  ⚠ 版本漂移 ${state.patches_drift} 个：非可选补丁的锚点在这个宿主上一条都没命中。`);
+    out.push(`    官方改写了对应代码，这些补丁会静默跳过，需要给 lib/core.js 追加一代 pattern：${state.drift_patch_ids.map((id) => "#" + id).join(" ")}`);
+  }
   for (const p of core.ALL_PATCHES) {
     const s = state.patch_status[p.id];
     const mark = s === "applied" ? "✓" : s === "pending" ? "✗" : "·";
